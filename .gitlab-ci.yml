@@ -1,0 +1,49 @@
+image: maven:3-jdk-8
+#image: java:8
+before_script:
+     #- et JAVA_HOME="/usr/lib/jvm/java-8-openjdk-amd64/jre "
+     #- export PATH=$JAVA_HOME/bin:$PATH
+     
+       
+stages:
+     - build
+     - test
+     - deploy
+     
+default:
+     tags:
+        - assignment3
+
+       
+build-app:
+     
+     stage: build
+     script: 
+        - echo "Build Stage started"
+        - mvn clean install -DskipTests
+        - echo "Build Stage completed"
+        - ls
+
+       
+unit-test:
+     stage: test
+     script: 
+        - echo "Unit testing stage started"
+        - mvn --version
+        - mvn test
+        
+curl-test:
+     stage: test
+     script:
+        - cat curl.bash
+        - chmod u+x curl.bash
+        - bash curl.bash
+       
+deploy-app:
+     stage: deploy
+     script:
+        - mvn clean install -DskipTests
+        - echo "$MY_KEY" > key.pem 
+        - chmod 600 key.pem
+        - scp -i key.pem -r target/demo-0.0.1-SNAPSHOT.war obp937@cs47832.fulgentcorp.com:/home/obp937/assignment3
+     
