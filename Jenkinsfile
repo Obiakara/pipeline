@@ -1,36 +1,29 @@
-node {
-    def app
+  
+pipeline {
+    agent any
+    stages {
+        stage ('Compile Stage') {
 
-    stage('Clone repository') {
-        /* Cloning the Repository to our Workspace */
+            steps {
+                withMaven(maven : 'apache-maven-3.6.3') {
+                    bat 'mvn clean compile'
+                }
+            }
+        }
+        stage ('Testing Stage') {
 
-        checkout scm
-    }
-
-    stage('Build image') {
-        /* This builds the actual image */
-
-        /*app = docker.build("pipeline-docker-image")*/
-        print ls
-        print pwd
-        echo "Hello World"
-    }
-
-    stage('Test image') {
-        
-        /*app.inside {
-            echo "Tests passed"
-        }*/
-    }
-
-    stage('Push image') {
-        /* 
-			You would need to first register with DockerHub before you can push images to your account
-		*/
-        /*docker.withRegistry('https://registry.hub.docker.com', 'dockerHub') {
-            app.push("${env.BUILD_NUMBER}")
-            app.push("latest")
-            } 
-                echo "Trying to Push Docker Build to DockerHub"*/
+            steps {
+                withMaven(maven : 'apache-maven-3.6.3') {
+                    bat 'mvn test'
+                }
+            }
+        }
+        stage ('Install Stage') {
+            steps {
+                withMaven(maven : 'apache-maven-3.6.3') {
+                    bat 'mvn install'
+                }
+            }
+        }
     }
 }
