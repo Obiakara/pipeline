@@ -11,6 +11,9 @@ node {
         /* This builds the actual image */
 
         /*app = docker.build("pipeline-docker-image")*/
+        ls
+        pwd
+        echo "Hello World"
     }
 
     stage('Test image') {
